@@ -1,6 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 
-function Chat({ socket }) {
+import { io } from "socket.io-client";   
+
+// connect directly
+const socket = io("https://ocelotcubs.onrender.com", {
+  transports: ["websocket"],
+});
+
+function Chat() {
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
   const [username, setUsername] = useState("");
@@ -22,7 +29,7 @@ function Chat({ socket }) {
     });
 
     return () => socket.off("receiveMessage");
-  }, [socket]);
+  }, []);
 
   const handleSetUsername = () => {
     if (username.trim()) {
