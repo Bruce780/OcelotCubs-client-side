@@ -9,6 +9,11 @@ import Navbar from './components/Navbar';
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(localStorage.getItem('isLoggedIn') === 'true');
 
+<<<<<<< HEAD
+=======
+  
+
+>>>>>>> 609ec31992c6d725dee3417253f1a8c9357b8a47
   useEffect(() => {
     localStorage.setItem('isLoggedIn', isLoggedIn);
   }, [isLoggedIn]);

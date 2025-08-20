@@ -3,9 +3,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { io } from "socket.io-client";   
 
 // connect directly
-const socket = io("https://ocelotcubs.onrender.com", {
-  transports: ["websocket"],
-});
+const socket = io("https://ocelotcubs.onrender.com");
 
 function Chat() {
   const [messages, setMessages] = useState([]);
