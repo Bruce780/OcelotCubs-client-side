@@ -162,16 +162,16 @@ function Home() {
             
             {/* About Content */}
             <div className="space-y-6">
-              <h3 className="text-2xl font-bold text-gray-800">Hi, I'm Bruce! 👋</h3>
+              <h3 className="text-2xl font-bold text-gray-800">Hi, I'm Igbinedion Eghosa Bruce! </h3>
               
               <p className="text-gray-600 leading-relaxed">
                 I'm a passionate full-stack developer who loves creating interactive web experiences. 
-                This gaming platform showcases my skills in modern web development, combining a 
-                sleek React frontend with a powerful Node.js backend.
+                This gaming platform showcases my skills in modern web development,mobile app development and game development, combining a 
+                sleek React frontend with a powerful Node.js backend. 
               </p>
               
               <div className="space-y-3">
-                <h4 className="text-lg font-semibold text-purple-600">🛠️ Tech Stack:</h4>
+                <h4 className="text-lg font-semibold text-purple-600"> Tech Stack:</h4>
                 <div className="flex flex-wrap gap-2">
                   {["React", "Node.js", "Express", "MongoDB", "Socket.io", "JavaScript", "Tailwind CSS"].map((tech, index) => (
                     <span
@@ -185,7 +185,7 @@ function Home() {
               </div>
               
               <div className="space-y-3">
-                <h4 className="text-lg font-semibold text-purple-600">✨ Features Built:</h4>
+                <h4 className="text-lg font-semibold text-purple-600"> Features Built:</h4>
                 <ul className="text-gray-600 space-y-1">
                   <li>• Real-time chat system with Socket.io</li>
                   <li>• User authentication & registration</li>
@@ -197,7 +197,7 @@ function Home() {
               
               <div className="pt-4">
                 <p className="text-gray-600 italic">
-                  "Building the future, one line of code at a time." 🚀
+                  "Building the future, one line of code at a time." 
                 </p>
               </div>
             </div>

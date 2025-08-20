@@ -20,11 +20,11 @@ export default function Register({ setIsLoggedIn }) {
       const data = await res.json();
 
       if (res.ok) {
-        // Save auth info
+        // saves auth info
         localStorage.setItem("token", data.token);
         localStorage.setItem("isLoggedIn", "true");
         
-        // ** FIX: Store user data just like in Login **
+        // stores user data like login
         localStorage.setItem("user", JSON.stringify(data.user || data));
 
         // Update state for Navbar
