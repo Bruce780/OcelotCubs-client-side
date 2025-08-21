@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 
-// Working Base64 image - replace this with your actual photo's Base64 when ready
-const profileImageBase64 = "data:image/svg+xml,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='100' cy='100' r='90' fill='%234F46E5'/%3E%3Ctext x='100' y='115' font-family='Arial' font-size='60' fill='white' text-anchor='middle'%3EEB%3C/text%3E%3C/svg%3E";
 
 function Home() {
   const [games, setGames] = useState([]);
@@ -16,7 +14,7 @@ function Home() {
   const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
   useEffect(() => {
-    // Fetch the games from backend
+    // Fetching the games from backend
     const fetchGames = async () => {
       try {
         setLoading(true);
@@ -31,7 +29,7 @@ function Home() {
 
     fetchGames();
 
-    // Check if user is logged in with error handling
+    // toCheck if user is logged in with error handling
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
       try {
@@ -160,7 +158,7 @@ function Home() {
             <div className="flex justify-center">
               <div className="relative">
                 <img
-                  src={profileImageBase64}
+                  src={require("assets/images/Profile.jpg")}
                   alt="Igbinedion Eghosa Bruce"
                   className="w-64 h-64 object-cover rounded-full shadow-xl border-4 border-white ring-4 ring-purple-400 ring-opacity-50"
                 />
