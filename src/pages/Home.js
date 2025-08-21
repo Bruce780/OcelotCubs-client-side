@@ -152,13 +152,20 @@ function Home() {
             About Me
           </h2>
           
-          <div className="grid md:grid-cols-2 gap-8 items-center">
-            {/* Profile Image Placeholder */}
-            <div className="flex justify-center">
-              <div className="w-64 h-64 bg-gradient-to-br from-purple-400 via-pink-400 to-yellow-400 rounded-full flex items-center justify-center shadow-lg">
-                <span className="text-6xl">👨‍💻</span>
-              </div>
-            </div>
+          {/* Replace the Profile Image Placeholder section in your Home.js with this: */}
+
+{/* Profile Image */}
+<div className="flex justify-center">
+  <div className="relative">
+    <img
+      src="/Images/profile.jpg" // 
+      alt="Igbinedion Eghosa Bruce"
+      className="w-64 h-64 object-cover rounded-full shadow-xl border-4 border-white ring-4 ring-gradient-to-r ring-purple-400 ring-opacity-50"
+    />
+    {/* Optional: Add a decorative ring */}
+    <div className="absolute inset-0 w-64 h-64 rounded-full bg-gradient-to-br from-purple-400/20 via-pink-400/20 to-yellow-400/20 ring-2 ring-purple-300 ring-opacity-30"></div>
+  </div>
+</div>
             
             {/* About Content */}
             <div className="space-y-6">
@@ -204,7 +211,6 @@ function Home() {
           </div>
         </div>
       </div>
-    </div>
   );
 }
 
