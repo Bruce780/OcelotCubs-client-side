@@ -1,3 +1,4 @@
+import profileImage from '../assets/images/Profile.jpg';
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
@@ -158,7 +159,7 @@ function Home() {
 <div className="flex justify-center">
   <div className="relative">
     <img
-      src="/images/Profile.jpg" // 
+      src={profileImage} // 
       alt="Igbinedion Eghosa Bruce"
       className="w-64 h-64 object-cover rounded-full shadow-xl border-4 border-white ring-4 ring-gradient-to-r ring-purple-400 ring-opacity-50"
     />
