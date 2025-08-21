@@ -158,7 +158,7 @@ function Home() {
 <div className="flex justify-center">
   <div className="relative">
     <img
-      src="/Images/profile.jpg" // 
+      src="/images/Profile.jpg" // 
       alt="Igbinedion Eghosa Bruce"
       className="w-64 h-64 object-cover rounded-full shadow-xl border-4 border-white ring-4 ring-gradient-to-r ring-purple-400 ring-opacity-50"
     />
