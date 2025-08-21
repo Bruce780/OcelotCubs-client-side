@@ -2,8 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 
-const profileImageBase64 = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==";
-
+const profileImageBase64 = "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI1NiIgdmlld0JveD0iMCAwIDI1NiAyNTYiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyNTYiIGhlaWdodD0iMjU2IiBmaWxsPSIjNjM2NkYxIi8+Cjx0ZXh0IHg9IjEyOCIgeT0iMTM1IiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iNjQiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5FQjwvdGV4dD4KPHN2Zz4=";
 function Home() {
   const [games, setGames] = useState([]);
   const [search, setSearch] = useState("");
@@ -147,71 +146,80 @@ function Home() {
         )}
       </div>
 
-      {/* About Me Section */}
-      <div className="mt-20 max-w-4xl mx-auto">
-        <div className="bg-white rounded-3xl shadow-xl p-8 border border-gray-200">
-          <h2 className="text-4xl font-bold text-center mb-8 bg-clip-text text-transparent bg-gradient-to-r from-purple-600 via-pink-500 to-yellow-400">
-            About Me
-          </h2>
-          
-          {/* Replace the Profile Image Placeholder section in your Home.js with this: */}
-
-{/* Profile Image */}
-<div className="flex justify-center">
-  <div className="relative">
-    <img
-      src={profileImageBase64} // 
-      alt="Igbinedion Eghosa Bruce"
-      className="w-64 h-64 object-cover rounded-full shadow-xl border-4 border-white ring-4 ring-gradient-to-r ring-purple-400 ring-opacity-50"
-    />
-    {/* Optional: Add a decorative ring */}
-    <div className="absolute inset-0 w-64 h-64 rounded-full bg-gradient-to-br from-purple-400/20 via-pink-400/20 to-yellow-400/20 ring-2 ring-purple-300 ring-opacity-30"></div>
-  </div>
-</div>
-            
-            {/* About Content */}
-            <div className="space-y-6">
-              <h3 className="text-2xl font-bold text-gray-800">Hi, I'm Igbinedion Eghosa Bruce! </h3>
-              
-              <p className="text-gray-600 leading-relaxed">
-                I'm a passionate full-stack developer who loves creating interactive web experiences. 
-                This gaming platform showcases my skills in modern web development,mobile app development and game development, combining a 
-                sleek React frontend with a powerful Node.js backend. 
-              </p>
-              
-              <div className="space-y-3">
-                <h4 className="text-lg font-semibold text-purple-600"> Tech Stack:</h4>
-                <div className="flex flex-wrap gap-2">
-                  {["React", "Node.js", "Express", "MongoDB", "Socket.io", "JavaScript", "Tailwind CSS"].map((tech, index) => (
-                    <span
-                      key={index}
-                      className="px-3 py-1 bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 rounded-full text-sm font-medium"
-                    >
-                      {tech}
-                    </span>
-                  ))}
-                </div>
-              </div>
-              
-              <div className="space-y-3">
-                <h4 className="text-lg font-semibold text-purple-600"> Features Built:</h4>
-                <ul className="text-gray-600 space-y-1">
-                  <li>• Real-time chat system with Socket.io</li>
-                  <li>• User authentication & registration</li>
-                  <li>• Responsive game catalog with search</li>
-                  <li>• MongoDB database integration</li>
-                  <li>• Modern, interactive UI design</li>
-                </ul>
-              </div>
-              
-              <div className="pt-4">
-                <p className="text-gray-600 italic">
-                  "Building the future, one line of code at a time." 
-                </p>
-              </div>
-            </div>
+     {/* About Me Section */}
+<div className="mt-20 max-w-4xl mx-auto">
+  <div className="bg-white rounded-3xl shadow-xl p-8 border border-gray-200">
+    <h2 className="text-4xl font-bold text-center mb-8 bg-clip-text text-transparent bg-gradient-to-r from-purple-600 via-pink-500 to-yellow-400">
+      About Me
+    </h2>
+    
+    {/* THIS IS THE MISSING WRAPPER - VERY IMPORTANT! */}
+    <div className="grid md:grid-cols-2 gap-8 items-center">
+      {/* Profile Image */}
+      <div className="flex justify-center">
+        <div className="relative">
+          <img
+            src={profileImageBase64}
+            alt="Igbinedion Eghosa Bruce"
+            className="w-64 h-64 object-cover rounded-full shadow-xl border-4 border-white ring-4 ring-purple-400 ring-opacity-50"
+          />
+          {/* Optional: Add a decorative ring */}
+          <div className="absolute inset-0 w-64 h-64 rounded-full bg-gradient-to-br from-purple-400/20 via-pink-400/20 to-yellow-400/20 ring-2 ring-purple-300 ring-opacity-30"></div>
+        </div>
+      </div>
+      
+      {/* About Content */}
+      <div className="space-y-6">
+        <h3 className="text-2xl font-bold text-gray-800">Hi, I'm Igbinedion Eghosa Bruce!</h3>
+        
+        <p className="text-gray-600 leading-relaxed">
+          I'm a passionate full-stack developer who loves creating interactive web experiences. 
+          This gaming platform showcases my skills in modern web development, mobile app development and game development, combining a 
+          sleek React frontend with a powerful Node.js backend. 
+        </p>
+        
+        <div className="space-y-3">
+          <h4 className="text-lg font-semibold text-purple-600">🚀 Tech Stack:</h4>
+          <div className="flex flex-wrap gap-2">
+            {["React", "Node.js", "Express", "MongoDB", "Socket.io", "JavaScript", "Tailwind CSS"].map((tech, index) => (
+              <span
+                key={index}
+                className="px-3 py-1 bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 rounded-full text-sm font-medium"
+              >
+                {tech}
+              </span>
+            ))}
           </div>
         </div>
+        
+        <div className="space-y-3">
+          <h4 className="text-lg font-semibold text-purple-600">✨ Features Built:</h4>
+          <ul className="text-gray-600 space-y-1">
+            <li>• Real-time chat system with Socket.io</li>
+            <li>• User authentication & registration</li>
+            <li>• Responsive game catalog with search</li>
+            <li>• MongoDB database integration</li>
+            <li>• Modern, interactive UI design</li>
+          </ul>
+        </div>
+        
+        <div className="pt-4">
+          <p className="text-gray-600 italic">
+            "Building the future, one line of code at a time." 💻
+          </p>
+        </div>
+      </div>
+    </div> {/* This closing div was missing! */}
+  </div>
+</div>
+              
+        <>
+          <div className="pt-4">
+            <p className="text-gray-600 italic">
+              "Building the future, one line of code at a time." 
+            </p>
+          </div>
+        </>
       </div>
   );
 }
