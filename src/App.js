@@ -186,7 +186,6 @@ function App() {
         onLogout={clearUserSession}
       />
       <Routes>
-        <Route path="/" element={<Home isLoggedIn={isLoggedIn} />} />
         <Route path="/" element={<Home isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />} />
         <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
         <Route path="/register" element={<Register setIsLoggedIn={setIsLoggedIn} />} />
