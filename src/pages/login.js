@@ -9,7 +9,8 @@ function Login({ setIsLoggedIn }) {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
+  // FIXED: Use your actual backend URL
+  const API_URL = "https://ocelotcubs.onrender.com";
 
   const handleLogin = async (e) => {
     e.preventDefault();

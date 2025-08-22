@@ -3,16 +3,16 @@ import profilePic from "../assets/images/Profile.jpg";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 
-
-function Home() {
+// FIXED: Accept authentication props like other components
+function Home({ isLoggedIn, setIsLoggedIn }) {
   const [games, setGames] = useState([]);
   const [search, setSearch] = useState("");
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // API base URL with environment variable support
-  const API_BASE_URL = process.env.REACT_APP_API_URL || "http://localhost:5000";
+  // FIXED: Use your actual backend URL
+  const API_BASE_URL = "https://ocelotcubs.onrender.com";
 
   useEffect(() => {
     // Fetching the games from backend
@@ -30,21 +30,75 @@ function Home() {
 
     fetchGames();
 
-    // toCheck if user is logged in with error handling
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      try {
-        setUser(JSON.parse(storedUser));
-      } catch (err) {
-        console.error("Invalid user data in localStorage:", err);
-        localStorage.removeItem("user");
+    // FIXED: Check sessionStorage instead of localStorage + sync with main app state
+    const checkAuthStatus = () => {
+      const sessionLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
+      const token = sessionStorage.getItem('token');
+      const storedUser = sessionStorage.getItem('user'); // FIXED: Use sessionStorage
+      
+      console.log('=== HOME AUTH CHECK ===');
+      console.log('sessionLoggedIn:', sessionLoggedIn);
+      console.log('hasToken:', !!token);
+      console.log('storedUser:', storedUser);
+      console.log('isLoggedIn prop:', isLoggedIn);
+      
+      if (sessionLoggedIn && token && storedUser) {
+        try {
+          const userData = JSON.parse(storedUser);
+          setUser(userData);
+          // FIXED: Sync with main app state
+          if (!isLoggedIn) {
+            setIsLoggedIn(true);
+          }
+        } catch (err) {
+          console.error("Invalid user data in sessionStorage:", err);
+          clearSession();
+        }
+      } else {
+        // FIXED: Clear user state if not logged in
+        setUser(null);
+        if (isLoggedIn) {
+          setIsLoggedIn(false);
+        }
       }
-    }
-  }, [API_BASE_URL]);
+    };
 
-  const handleLogout = () => {
-    localStorage.removeItem("user");
+    checkAuthStatus();
+  }, [API_BASE_URL, isLoggedIn, setIsLoggedIn]); // FIXED: Add dependencies
+
+  // FIXED: Clear sessionStorage instead of localStorage
+  const clearSession = () => {
+    sessionStorage.clear();
+    localStorage.removeItem('token');
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('user');
+  };
+
+  // FIXED: Update handleLogout to sync with main app and use backend
+  const handleLogout = async () => {
+    try {
+      // Send logout request to server
+      const response = await fetch(`${API_BASE_URL}/api/logout`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+
+      if (response.ok) {
+        console.log('Server logout successful');
+      } else {
+        console.warn('Server logout failed, but proceeding with client logout');
+      }
+    } catch (error) {
+      console.error('Error during logout:', error);
+    }
+
+    // Clear session and sync with main app state
+    clearSession();
     setUser(null);
+    setIsLoggedIn(false);
     navigate("/");
   };
 
@@ -52,6 +106,9 @@ function Home() {
   const filteredGames = games.filter((game) =>
     game.title.toLowerCase().includes(search.toLowerCase())
   );
+
+  // FIXED: Use both isLoggedIn prop and user state for consistency
+  const showLoggedInContent = isLoggedIn && user;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white via-gray-100 to-gray-200 text-gray-900 p-6">
@@ -105,14 +162,14 @@ function Home() {
         </div>
       )}
 
-      {/* Buttons */}
+      {/* FIXED: Buttons now sync with main app authentication state */}
       <div className="flex justify-center mt-12 gap-6 flex-wrap items-center">
-        {user ? (
+        {showLoggedInContent ? (
           <>
             <span className="text-lg font-medium">
               Hello,{" "}
               <span className="font-bold text-purple-600">
-                {user.name || "User"}
+                {user.username || user.name || "User"}
               </span>{" "}
               👋
             </span>
