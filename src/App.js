@@ -61,8 +61,9 @@ function App() {
     setIsLoggedIn(false);
     
     // Send logout request to server
-    fetch('/api/logout', {
+    fetch('https://ocelotcubs.onrender.com/api/logout', {
       method: 'POST',
+      credentials: 'include', // Include session cookies
       headers: {
         'Content-Type': 'application/json',
       },
