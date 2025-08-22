@@ -7,7 +7,7 @@ import Chat from "./components/Chat";
 import Navbar from './components/Navbar';
 
 function App() {
-  // Use sessionStorage instead of localStorage for immediate logout on tab close
+  // Initialize login state from sessionStorage
   const [isLoggedIn, setIsLoggedIn] = useState(() => {
     const sessionLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
     const hasToken = sessionStorage.getItem('token');
@@ -18,19 +18,17 @@ function App() {
     return sessionLoggedIn && hasToken;
   });
 
-  // Helper functions - defined first to avoid hoisting issues
-  const generateSessionId = useCallback(() => {
-    return 'sess_' + Math.random().toString(36).substr(2, 16);
-  }, []);
-
+  // Helper function to clear all session data
   const clearUserSession = useCallback(() => {
+    console.log('Clearing user session');
     sessionStorage.clear();
     // Also clear any localStorage items that might contain user data
     localStorage.removeItem('userToken');
     localStorage.removeItem('userId');
-    localStorage.removeItem('isLoggedIn'); // Remove old localStorage usage
+    localStorage.removeItem('isLoggedIn');
   }, []);
 
+  // Update user activity timestamp
   const updateUserActivity = useCallback(() => {
     const sessionDataStr = sessionStorage.getItem('sessionData');
     if (sessionDataStr) {
@@ -40,8 +38,9 @@ function App() {
         sessionStorage.setItem('sessionData', JSON.stringify(sessionData));
         
         // Send heartbeat to server
-        fetch('/api/heartbeat', {
+        fetch('https://ocelotcubs.onrender.com/api/heartbeat', {
           method: 'POST',
+          credentials: 'include',
           headers: {
             'Content-Type': 'application/json',
           },
@@ -55,135 +54,121 @@ function App() {
     }
   }, []);
 
-  const handleUserExit = useCallback(() => {
-    console.log('User exited - clearing session');
-    clearUserSession();
-    setIsLoggedIn(false);
+  // Handle explicit logout (called from Navbar or other components)
+  const handleLogout = useCallback(() => {
+    console.log('Handling explicit logout');
     
     // Send logout request to server
     fetch('https://ocelotcubs.onrender.com/api/logout', {
       method: 'POST',
-      credentials: 'include', // Include session cookies
+      credentials: 'include',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ 
         action: 'logout',
-        reason: 'user_exit'
+        reason: 'user_logout',
+        timestamp: new Date().toISOString()
       })
     }).catch(err => console.log('Logout request failed:', err));
+
+    // Clear session and update state
+    clearUserSession();
+    setIsLoggedIn(false);
   }, [clearUserSession]);
 
-  const checkSessionValidity = useCallback(() => {
-    const sessionValid = sessionStorage.getItem('isLoggedIn') === 'true';
-    const sessionData = sessionStorage.getItem('sessionData');
+  // Handle browser/tab close (only for cleanup)
+  const handleBeforeUnload = useCallback(() => {
+    console.log('Browser/tab closing - cleaning up session');
     
-    if (!sessionValid || !sessionData) {
-      // Session is invalid - force logout
-      setIsLoggedIn(false);
-      clearUserSession();
-    }
-  }, [clearUserSession]);
-
-  // Session management logic
-  useEffect(() => {
-    // Update session storage when login state changes
-    sessionStorage.setItem('isLoggedIn', isLoggedIn);
-    
-    // If user logs in, store additional session data
+    // Send logout signal to server using sendBeacon (more reliable for page unload)
     if (isLoggedIn) {
-      const sessionData = {
-        loginTime: new Date().toISOString(),
-        sessionId: generateSessionId(),
-        lastActivity: new Date().toISOString()
-      };
-      sessionStorage.setItem('sessionData', JSON.stringify(sessionData));
-    } else {
-      // Clear all session data on logout
-      sessionStorage.removeItem('sessionData');
-      sessionStorage.removeItem('userToken');
-      sessionStorage.removeItem('userId');
-    }
-  }, [isLoggedIn, generateSessionId]);
-
-  // Setup session management event listeners
-  useEffect(() => {
-    const handleBeforeUnload = () => {
-      // Clear session when user closes tab/browser
-      clearUserSession();
-      
-      // Send logout signal to server
-      if (isLoggedIn) {
-        navigator.sendBeacon('/api/logout', JSON.stringify({
+      navigator.sendBeacon(
+        'https://ocelotcubs.onrender.com/api/logout', 
+        JSON.stringify({
           action: 'logout',
+          reason: 'browser_close',
           timestamp: new Date().toISOString()
-        }));
-      }
-    };
+        })
+      );
+    }
+    
+    clearUserSession();
+  }, [isLoggedIn, clearUserSession]);
 
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'hidden' && isLoggedIn) {
-        // User switched tabs or minimized - log them out
-        handleUserExit();
-      } else if (document.visibilityState === 'visible') {
-        // User returned - check if session is still valid
-        checkSessionValidity();
-      }
-    };
+  // REMOVED: No longer clearing session data on every isLoggedIn change
+  // This was interfering with the login process
 
-    const handleWindowBlur = () => {
-      if (isLoggedIn) {
-        // User left the window
-        handleUserExit();
-      }
-    };
-
-    const handleWindowFocus = () => {
-      // User returned to window - validate session
-      checkSessionValidity();
-    };
-
-    // Add event listeners
+  // Set up browser close handler only
+  useEffect(() => {
+    // Only handle actual browser/tab close, not other window events
     window.addEventListener('beforeunload', handleBeforeUnload);
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('blur', handleWindowBlur);
-    window.addEventListener('focus', handleWindowFocus);
 
-    // Cleanup event listeners
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('blur', handleWindowBlur);
-      window.removeEventListener('focus', handleWindowFocus);
     };
-  }, [isLoggedIn, handleUserExit, checkSessionValidity, clearUserSession]);
+  }, [handleBeforeUnload]);
 
-  // Setup activity tracking for active sessions
+  // Set up activity tracking for logged-in users
   useEffect(() => {
     let activityInterval;
 
     if (isLoggedIn) {
-      // Update activity every 30 seconds while user is active
+      console.log('Setting up activity tracking');
+      
+      // Update activity every 30 seconds while user is active and tab is visible
       activityInterval = setInterval(() => {
         if (document.visibilityState === 'visible') {
           updateUserActivity();
         }
       }, 30000); // 30 seconds
-    }
 
-    return () => {
-      if (activityInterval) {
-        clearInterval(activityInterval);
-      }
-    };
+      // Track user interactions to update activity
+      const trackActivity = () => {
+        updateUserActivity();
+      };
+
+      // Add lightweight activity tracking
+      document.addEventListener('click', trackActivity);
+      document.addEventListener('keydown', trackActivity);
+
+      return () => {
+        if (activityInterval) {
+          clearInterval(activityInterval);
+        }
+        document.removeEventListener('click', trackActivity);
+        document.removeEventListener('keydown', trackActivity);
+      };
+    }
   }, [isLoggedIn, updateUserActivity]);
+
+  // Validate session periodically (optional - less aggressive approach)
+  useEffect(() => {
+    if (isLoggedIn) {
+      const validateSession = () => {
+        const sessionValid = sessionStorage.getItem('isLoggedIn') === 'true';
+        const hasToken = sessionStorage.getItem('token');
+        
+        if (!sessionValid || !hasToken) {
+          console.log('Session invalid - logging out');
+          setIsLoggedIn(false);
+          clearUserSession();
+        }
+      };
+
+      // Check session validity every 5 minutes (much less aggressive)
+      const validationInterval = setInterval(validateSession, 5 * 60 * 1000);
+
+      return () => clearInterval(validationInterval);
+    }
+  }, [isLoggedIn, clearUserSession]);
 
   return (
     <Router>
       <Navbar 
         isLoggedIn={isLoggedIn} 
         setIsLoggedIn={setIsLoggedIn}
-        onLogout={clearUserSession}
+        onLogout={handleLogout} // Pass the proper logout handler
       />
       <Routes>
         <Route path="/" element={<Home isLoggedIn={isLoggedIn} setIsLoggedIn={setIsLoggedIn} />} />
