@@ -4,8 +4,16 @@ import { Link, useNavigate } from 'react-router-dom';
 export default function Navbar({ isLoggedIn, setIsLoggedIn, onLogout }) {
   const navigate = useNavigate();
   
-  // Check session storage instead of localStorage
-  const loggedIn = isLoggedIn || sessionStorage.getItem('isLoggedIn') === 'true';
+  // Check both props and sessionStorage for login state
+  const sessionLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
+  const hasToken = sessionStorage.getItem('token');
+  const loggedIn = isLoggedIn || (sessionLoggedIn && hasToken);
+
+  console.log('=== NAVBAR RENDER DEBUG ===');
+  console.log('isLoggedIn prop:', isLoggedIn);
+  console.log('sessionStorage isLoggedIn:', sessionLoggedIn);
+  console.log('hasToken:', !!hasToken);
+  console.log('Final loggedIn state:', loggedIn);
 
   useEffect(() => {
     // Check both sessionStorage and server session on component mount
@@ -13,7 +21,17 @@ export default function Navbar({ isLoggedIn, setIsLoggedIn, onLogout }) {
       const sessionLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
       const token = sessionStorage.getItem("token");
       
+      console.log('=== NAVBAR AUTH CHECK ===');
+      console.log('sessionLoggedIn:', sessionLoggedIn);
+      console.log('hasToken:', !!token);
+      
       if (sessionLoggedIn && token) {
+        // Update parent state if not already set
+        if (!isLoggedIn) {
+          console.log('📝 Updating parent isLoggedIn state to true');
+          setIsLoggedIn(true);
+        }
+        
         // Verify with server that session is still valid
         try {
           const response = await fetch('/api/session-status', {
@@ -25,27 +43,28 @@ export default function Navbar({ isLoggedIn, setIsLoggedIn, onLogout }) {
           });
           
           const data = await response.json();
+          console.log('Server session status:', data);
           
           if (data.isLoggedIn) {
             setIsLoggedIn(true);
           } else {
             // Server session expired, clear client session
+            console.log('❌ Server session expired, clearing client session');
             clearClientSession();
             setIsLoggedIn(false);
           }
         } catch (error) {
           console.error('Error checking session status:', error);
-          // On error, assume session is invalid
-          clearClientSession();
-          setIsLoggedIn(false);
+          // On error, keep client session but don't fail
         }
       } else {
+        console.log('❌ No valid client session found');
         setIsLoggedIn(false);
       }
     };
 
     checkAuthStatus();
-  }, [setIsLoggedIn]);
+  }, [setIsLoggedIn, isLoggedIn]); // Added isLoggedIn to deps
 
   const clearClientSession = () => {
     // Clear all session data

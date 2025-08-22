@@ -8,9 +8,15 @@ import Navbar from './components/Navbar';
 
 function App() {
   // Use sessionStorage instead of localStorage for immediate logout on tab close
-  const [isLoggedIn, setIsLoggedIn] = useState(
-    sessionStorage.getItem('isLoggedIn') === 'true'
-  );
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    const sessionLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
+    const hasToken = sessionStorage.getItem('token');
+    console.log('=== APP INITIAL STATE ===');
+    console.log('sessionStorage isLoggedIn:', sessionLoggedIn);
+    console.log('hasToken:', !!hasToken);
+    console.log('Initial isLoggedIn state:', sessionLoggedIn && hasToken);
+    return sessionLoggedIn && hasToken;
+  });
 
   // Helper functions - defined first to avoid hoisting issues
   const generateSessionId = useCallback(() => {
