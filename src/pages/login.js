@@ -28,9 +28,16 @@ function Login({ setIsLoggedIn }) {
       console.log('Login response:', loginRes.data);
 
       // Step 2: Create server session
+      // Extract user data from login response (adjust based on your auth endpoint response)
+      const userData = loginRes.data.user || loginRes.data;
+      const userId = userData.id || userData._id || userData.userId;
+      const username = userData.username || userData.name || userData.email?.split('@')[0] || 'Unknown';
+
+      console.log('Extracted user data for session:', { userId, username, fullUserData: userData });
+
       const sessionRes = await axios.post(`${API_URL}/api/create-session`, {
-        userId: loginRes.data.user?.id || loginRes.data.userId,
-        username: loginRes.data.user?.username || loginRes.data.username || email.split('@')[0]
+        userId: userId,
+        username: username
       }, {
         withCredentials: true // Important: Include cookies for session
       });
