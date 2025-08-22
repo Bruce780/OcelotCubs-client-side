@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import profilePic from "../assets/images/Profile.jpg"; 
+import Profile from "./assets/images/Profile.jpg"; 
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -216,7 +216,7 @@ function Home({ isLoggedIn, setIsLoggedIn }) {
             <div className="flex justify-center">
               <div className="relative">
                 <img
-                  src={profilePic}
+                  src={Profile}
                   alt="Igbinedion Eghosa Bruce"
                   className="w-64 h-64 object-cover rounded-full shadow-xl border-4 border-white ring-4 ring-purple-400 ring-opacity-50"
                 />
