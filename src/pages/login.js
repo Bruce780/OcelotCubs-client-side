@@ -25,24 +25,53 @@ function Login({ setIsLoggedIn }) {
         withCredentials: true // Important: Include cookies for session
       });
 
-      console.log('Login response:', loginRes.data);
+      console.log('=== LOGIN RESPONSE DEBUG ===');
+      console.log('Full login response:', JSON.stringify(loginRes.data, null, 2));
+      console.log('Response keys:', Object.keys(loginRes.data));
 
       // Step 2: Create server session
       // Extract user data from login response (adjust based on your auth endpoint response)
       const userData = loginRes.data.user || loginRes.data;
-      const userId = userData.id || userData._id || userData.userId;
-      const username = userData.username || userData.name || userData.email?.split('@')[0] || 'Unknown';
+      console.log('userData extracted:', JSON.stringify(userData, null, 2));
+      console.log('userData keys:', Object.keys(userData || {}));
+      
+      // Try multiple possible userId fields, or use email as fallback
+      const userId = userData?.id || userData?._id || userData?.userId || userData?.email || email;
+      const username = userData?.username || userData?.name || userData?.email?.split('@')[0] || email.split('@')[0];
 
-      console.log('Extracted user data for session:', { userId, username, fullUserData: userData });
+      console.log('=== SESSION CREATION DATA ===');
+      console.log('userId:', userId, '(type:', typeof userId, ')');
+      console.log('username:', username, '(type:', typeof username, ')');
+      
+      // If no proper userId found, use email as identifier
+      if (!userData?.id && !userData?._id && !userData?.userId) {
+        console.log('⚠️ No standard userId field found, using email as userId');
+      }
 
-      const sessionRes = await axios.post(`${API_URL}/api/create-session`, {
-        userId: userId,
-        username: username
-      }, {
-        withCredentials: true // Important: Include cookies for session
+      // Ensure we have some form of identifier (email as fallback)
+      const finalUserId = userId || email;
+      const finalUsername = username || email.split('@')[0];
+
+      if (!finalUserId || !finalUsername) {
+        throw new Error(`Missing required data - userId: ${finalUserId}, username: ${finalUsername}`);
+      }
+
+      const sessionPayload = {
+        userId: finalUserId,
+        username: finalUsername
+      };
+
+      console.log('=== SENDING TO SERVER ===');
+      console.log('Session creation payload:', JSON.stringify(sessionPayload, null, 2));
+
+      const sessionRes = await axios.post(`${API_URL}/api/create-session`, sessionPayload, {
+        withCredentials: true, // Important: Include cookies for session
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
 
-      console.log('Session creation response:', sessionRes.data);
+      console.log('✅ Session creation successful:', sessionRes.data);
 
       // Step 3: Store session data in sessionStorage (cleared on tab close)
       const sessionData = {
