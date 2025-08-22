@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 export default function Navbar({ isLoggedIn, setIsLoggedIn, onLogout }) {
   const navigate = useNavigate();
-  const [sessionChecked, setSessionChecked] = useState(false);
+  const sessionCheckedRef = useRef(false);
   
   // Check both props and sessionStorage for login state
   const sessionLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
@@ -25,7 +25,7 @@ export default function Navbar({ isLoggedIn, setIsLoggedIn, onLogout }) {
       console.log('=== NAVBAR AUTH CHECK ===');
       console.log('sessionLoggedIn:', sessionLoggedIn);
       console.log('hasToken:', !!token);
-      console.log('sessionChecked:', sessionChecked);
+      console.log('sessionChecked:', sessionCheckedRef.current);
       
       if (sessionLoggedIn && token) {
         // Update parent state if not already set
@@ -36,7 +36,7 @@ export default function Navbar({ isLoggedIn, setIsLoggedIn, onLogout }) {
         
         // FIXED: Only verify with server if we haven't checked recently
         // AND give the server time to establish the session
-        if (!sessionChecked) {
+        if (!sessionCheckedRef.current) {
           // Wait a moment for server session to be established
           setTimeout(async () => {
             try {
@@ -70,7 +70,7 @@ export default function Navbar({ isLoggedIn, setIsLoggedIn, onLogout }) {
               console.log('Keeping client session due to server error');
             }
             
-            setSessionChecked(true);
+            sessionCheckedRef.current = true;
           }, 1000); // Wait 1 second for server session to be ready
         }
       } else {
@@ -82,10 +82,10 @@ export default function Navbar({ isLoggedIn, setIsLoggedIn, onLogout }) {
     };
 
     // Only run this check once when component mounts
-    if (!sessionChecked) {
+    if (!sessionCheckedRef.current) {
       checkAuthStatus();
     }
-  }, [isLoggedIn, sessionChecked, setIsLoggedIn]); // Include all dependencies
+  }, [isLoggedIn, setIsLoggedIn]); // Only depend on what we actually need
 
   // Separate effect to sync with prop changes
   useEffect(() => {
@@ -107,7 +107,7 @@ export default function Navbar({ isLoggedIn, setIsLoggedIn, onLogout }) {
     localStorage.removeItem('token');
     localStorage.removeItem('isLoggedIn');
     localStorage.removeItem('userId');
-    setSessionChecked(false); // Reset session check flag
+    sessionCheckedRef.current = false; // Reset session check flag
   };
 
   const handleLogout = async () => {
