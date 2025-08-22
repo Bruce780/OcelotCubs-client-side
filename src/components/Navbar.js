@@ -34,7 +34,7 @@ export default function Navbar({ isLoggedIn, setIsLoggedIn, onLogout }) {
         
         // Verify with server that session is still valid
         try {
-          const response = await fetch('/api/session-status', {
+          const response = await fetch('https://ocelotcubs.onrender.com/api/session-status', {
             method: 'GET',
             credentials: 'include', // Include session cookies
             headers: {
@@ -77,8 +77,8 @@ export default function Navbar({ isLoggedIn, setIsLoggedIn, onLogout }) {
 
   const handleLogout = async () => {
     try {
-      // Send logout request to server
-      const response = await fetch('/api/logout', {
+      // Send logout request to server - FIXED: Use correct backend URL
+      const response = await fetch('https://ocelotcubs.onrender.com/api/logout', {
         method: 'POST',
         credentials: 'include', // Include session cookies
         headers: {
